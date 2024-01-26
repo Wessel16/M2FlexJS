@@ -48,7 +48,7 @@ function draw()
     drawGameStart()
 } if (gameState == gamestate_ingame) 
 {
-    drawGameStart()
+    drawIngame()
 }
 
 }
@@ -104,6 +104,7 @@ function drawGameStart()
         g.drawImage(images["pawn"+i+".png"],playerAmountButtons[i].x,playerAmountButtons[i].y,playerAmountButtons[i].w,playerAmountButtons[i].h)
     }
 
+
 }
 
 function drawIngame()
@@ -117,7 +118,23 @@ function drawIngame()
         g.fillStyle  = "#FFFFFF";
         g.fillText((i+1)+"",pos.x,pos.y+20);
     }
-    
+    let x = 0 
+    let y = 0
+    for (let i = 0; i < pawnPositions.length; i++) 
+    {
+        let pos = pawnPositions[i];
+        let boardI = pos.boardI;
+
+        let boardpos = boardPositions[boardI];
+        let pawnSize = boardPositionSize/2;
+        g.drawImage(images["pawn"+i+".png"], boardpos.x + (x) * pawnSize, boardpos.y + (y) *pawnSize, boardpos.w /2, boardpos.h /2)
+        x++;
+        if(x == 2){
+            x = 0
+            y += 1 
+        }
+    }
+    g.drawImage(images["snakes.png"], 0,55, 600, 600)
 } 
 
 function drawGameOver(){
@@ -159,7 +176,7 @@ function loadImages()
 function imageLoaded() {
     initGame()
 
-    canvas.addEventListener("click",(e)=>{canvsaClicked(e)})
+    canvas.addEventListener("click",(e)=>{canvasClicked(e)})
 
     draw()
 }
@@ -171,8 +188,8 @@ function canvasClicked(mouseEvent)
         for (let i = 0; i < playerAmountButtons.length; i++) 
         {
             let button = playerAmountButtons[i]; 
-            let mX = mouseEvent.clientX
-            let mY = mouseEvent.clientY 
+            let mX = mouseEvent.layerX
+            let mY = mouseEvent.layerY 
             let hitButton = inRect(mX,mY,button)
             if (hitButton) 
             {
@@ -193,11 +210,28 @@ function inRect(px,py,rect)
     return result;
 }
 
+
 function startGame(playerAmount) 
 {
-    
+    gameState = gamestate_ingame
+    ingameState = ingamestate_start
+    pawnPositions=[]
+    playerTurn= 0 
+    winner= -1
+    console.log("playerAmount " + playerAmount)
+    for(let i = 0; i < playerAmount; i++)
+    {
+        let pawn = createPawn(i)
+        pawnPositions.push(pawn)
+    }
+
+    draw()
 }
 
+function createPawn(playerI)
+{
+    return  { boardI:0,playerI:playerI}
+}
 
 
 
